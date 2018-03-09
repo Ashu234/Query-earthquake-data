@@ -60,9 +60,12 @@ def random1000queries():
     else:
             cursor = conn.cursor()
             time_start = datetime.now()
-            for i in range(0,200):
+            for i in range(0,500):
                 randomnum = random.uniform(0,1)
-                result = cursor.execute("SELECT mag FROM earthquake_table WHERE mag >= %s AND mag <= %s ;", (randomnum,randomnum+1.0))
+                randomnum = round(randomnum, 2)
+                #print("random number %s" %(randomnum))
+                #result = cursor.execute("SELECT mag FROM earthquake_table WHERE mag >= %s AND mag <= %s ;", (randomnum,randomnum+1.0))
+                result = cursor.execute("SELECT mag FROM earthquake_table WHERE mag = %s ;", [randomnum])
                 articles = cursor.fetchall()
             cursor.close()
             conn.close()
@@ -123,15 +126,19 @@ def searchInCalifornia():
         else:
                 cursor = conn.cursor()
                 # "{0} LIKE '%{1}'".format(field, value_suffix)
-                query = "SELECT place FROM earthquake_table WHERE place LIKE '%{0}'".format(state)
+                query = "SELECT latitude, longitude, place FROM earthquake_table WHERE place LIKE '%{0}'".format(state)
                 cursor.execute(query)
-                result = cursor.fetchall()
-                #print(result)
+                results = cursor.fetchall()
+                #print(results[0])
                 cursor.close()
                 conn.close()
-        time_end = datetime.now()
-        time_diff = time_end - time_start
-        return render_template('complete.html',time_diff=time_diff)
+                time_end = datetime.now()
+                time_diff = time_end - time_start
+                print("time_diff %s" % (time_diff))
+                timediff = str(time_diff)
+                print("time_diff in string %s" % (timediff))
+                session['time_diff'] = timediff
+                return render_template('californiaresult.html', results=results)
     return render_template('searchInCalifornia.html')
 
 @app.route('/createDB')
