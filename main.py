@@ -45,33 +45,42 @@ def randomQueries():
 def dashboard():
     return render_template('dashboard.html')
 
-@app.route('/random1000queries')
-def random1000queries():
-    try:
-             conn = mysql.connector.connect(**config)
-             print("Connection established")
-    except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-              print("Something is wrong with the user name or password")
-            elif err.errno == errorcode.ER_BAD_DB_ERROR:
-              print("Database does not exist")
-            else:
-              print(err)
-    else:
-            cursor = conn.cursor()
-            time_start = datetime.now()
-            for i in range(0,500):
-                randomnum = random.uniform(0,1)
-                randomnum = round(randomnum, 2)
-                #print("random number %s" %(randomnum))
-                #result = cursor.execute("SELECT mag FROM earthquake_table WHERE mag >= %s AND mag <= %s ;", (randomnum,randomnum+1.0))
-                result = cursor.execute("SELECT mag FROM earthquake_table WHERE mag = %s ;", [randomnum])
-                articles = cursor.fetchall()
-            cursor.close()
-            conn.close()
-            time_end = datetime.now()
-    time_diff = time_end - time_start
-    return render_template('complete.html', time_diff=time_diff)
+@app.route('/randomqueriesupto1000', methods=['GET','POST'])
+def randomQueriesUpto1000():
+    if request.method == 'POST':
+        number = request.form['ChooseNumber']
+        print("number choosen %s" %(number))
+        try:
+                 conn = mysql.connector.connect(**config)
+                 print("Connection established")
+        except mysql.connector.Error as err:
+                if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                  print("Something is wrong with the user name or password")
+                elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                  print("Database does not exist")
+                else:
+                  print(err)
+        else:
+                cursor = conn.cursor()
+                time_start = datetime.now()
+                num = 0.5
+                number = int(number)
+                for i in range(0,number):
+                    randomnum = random.uniform(0,1)
+                    #print("random number %s" %(randomnum))
+                    #result = cursor.execute("SELECT mag FROM earthquake_table WHERE mag >= %s AND mag <= %s ;", (randomnum,randomnum+1.0))
+                    result = cursor.execute("SELECT COUNT(mag) FROM earthquake_table WHERE mag = %s ;", [num])
+                    articles = cursor.fetchone()
+                    num = num + 0.01
+                    num = round(num, 2)
+                    print(num)
+                    print(articles)
+                cursor.close()
+                conn.close()
+                time_end = datetime.now()
+        time_diff = time_end - time_start
+        return render_template('complete.html', time_diff=time_diff)
+    return render_template('Randomqueriesupto1000.html')
 
 @app.route('/restrictedQueries')
 def restrictedQueries():
