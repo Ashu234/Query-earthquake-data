@@ -116,8 +116,8 @@ def searchWithinDistance():
         return render_template('complete.html',time_diff=time_diff)
     return render_template('searchWithinDistance.html')
 
-@app.route('/searchInCalifornia', methods=['GET','POST'])
-def searchInCalifornia():
+@app.route('/searchWithPlaceName', methods=['GET','POST'])
+def searchWithPlaceName():
     if request.method == 'POST':
         state = request.form['state']
         print("state %s " % (state))
@@ -147,8 +147,8 @@ def searchInCalifornia():
                 timediff = str(time_diff)
                 print("time_diff in string %s" % (timediff))
                 session['time_diff'] = timediff
-                return render_template('californiaresult.html', results=results)
-    return render_template('searchInCalifornia.html')
+                return render_template('SearchWithPlaceNameResult.html', results=results)
+    return render_template('SearchWithPlaceName.html')
 
 @app.route('/createDB')
 def createDB():
